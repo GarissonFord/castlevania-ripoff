@@ -28,6 +28,8 @@ public class PlayerController : MonoBehaviour
     //Our GetAxis value for movement
     public float h;
 
+    public GameObject whip, whipSpawn;
+
     // Use this for initialization
     void Start()
     {
@@ -47,9 +49,21 @@ public class PlayerController : MonoBehaviour
             grounded = false;
             jump = true;
         }
+
+        if (Input.GetButtonDown("Attack"))
+        {
+            Instantiate(whip, whipSpawn.transform.position, whipSpawn.transform.rotation, this.transform);
+        }
     }
 
-    public void FixedUpdate()
+    IEnumerator Whip()
+    {
+        Instantiate(whip, whipSpawn.transform.position, whipSpawn.transform.rotation, this.transform);
+        yield return new WaitForSeconds(2);
+        Destroy(whip);
+    }
+
+    void FixedUpdate()
     {
         h = Input.GetAxis("Horizontal");
 
