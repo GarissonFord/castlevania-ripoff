@@ -76,21 +76,12 @@ public class PlayerController : MonoBehaviour
     {
         h = Input.GetAxis("Horizontal");
 
-        //The following two conditionals create a speed cap
-        if (h * rb.velocity.x < maxSpeed)
-        {
-            rb.AddForce(Vector2.right * h * moveForce);
-        }
-
-        if (Mathf.Abs(rb.velocity.x) > maxSpeed)
-        {
-            //Mathf.Sign returns -1 or 1 depending on the sign of the input
-            rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
-        }
+        if (h != 0)
+            rb.velocity = new Vector2(h * moveForce, rb.velocity.y);
 
         if (Input.GetButtonDown("Jump"))
         {
-            rb.AddForce(Vector2.up * jumpForce);
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             anim.SetBool("Grounded", false);
         }
 
