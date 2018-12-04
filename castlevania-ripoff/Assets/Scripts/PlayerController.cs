@@ -55,10 +55,14 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("IsMoving", true);
         }
 
+        //Stops walk-cycle
         if(Input.GetButtonUp("Horizontal"))
         {
             anim.SetBool("IsMoving", false);
         }
+
+        if (Input.GetButtonDown("Attack"))
+            anim.SetTrigger("Attack");
 
         //jump code comes from the following video https://www.youtube.com/watch?v=7KiK0Aqtmzc
         //allows player to fall faster
@@ -74,8 +78,10 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        //Represents if player is moving in the positive or negative direction
         h = Input.GetAxis("Horizontal");
 
+        //The player is moving if h isn't 0, so we set to a static velocity
         if (h != 0)
             rb.velocity = new Vector2(h * moveForce, rb.velocity.y);
 
