@@ -28,12 +28,15 @@ public class PlayerController : MonoBehaviour
     //Our GetAxis value for movement
     public float h;
 
-    public GameObject whip, whipSpawn;
+    public SpriteRenderer sr;
+    Animator anim;
 
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -45,32 +48,36 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") && grounded)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            grounded = false;
-            jump = true;
+            //rb.velocity = Vector2.up * jumpForce;
+            rb.AddForce(Vector2.up * jumpForce);
         }
-
-        if (Input.GetButtonDown("Attack"))
+        
+        if(Input.GetButton("Horizontal"))
         {
-            Instantiate(whip, whipSpawn.transform.position, whipSpawn.transform.rotation, this.transform);
+            anim.SetBool("IsMoving", true);
         }
-    }
 
-    IEnumerator Whip()
-    {
-        Instantiate(whip, whipSpawn.transform.position, whipSpawn.transform.rotation, this.transform);
-        yield return new WaitForSeconds(2);
-        Destroy(whip);
+        if(Input.GetButtonUp("Horizontal"))
+        {
+            anim.SetBool("IsMoving", false);
+        }
     }
 
     void FixedUpdate()
     {
         h = Input.GetAxis("Horizontal");
+        
+        if (h != 0)
+            rb.velocity = (Vector2.right * h * moveForce);
+        else
+            rb.velocity = Vector2.zero;
 
         //The following two conditionals create a speed cap
+        /*
         if (h * rb.velocity.x < maxSpeed)
         {
             rb.AddForce(Vector2.right * h * moveForce);
+           
         }
 
         if (Mathf.Abs(rb.velocity.x) > maxSpeed)
@@ -78,6 +85,7 @@ public class PlayerController : MonoBehaviour
             //Mathf.Sign returns -1 or 1 depending on the sign of the input
             rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
         }
+        */
 
         //Flips when hitting 'right' and facing left
         if (h > 0 && !facingRight)
@@ -85,17 +93,6 @@ public class PlayerController : MonoBehaviour
         //Flips when hitting 'left' and facing right
         else if (h < 0 && facingRight)
             Flip();
-
-
-        /*
-        if (jump)
-        {
-            rb.AddForce(new Vector2(0f, jumpForce));
-            //rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            jump = false;
-            //Debug.Log ("Jumped");
-        }
-        */
     }
 
     //Changes rotation of the player
