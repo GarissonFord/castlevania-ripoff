@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
     //Used for the Flip() function
     public bool facingRight = true;
 
@@ -17,6 +16,10 @@ public class PlayerController : MonoBehaviour
 
     //Power of a jump
     public float jumpForce;
+
+    //https://www.youtube.com/watch?v=7KiK0Aqtmzc
+    public float fallMultiplier;
+    public float lowJumpMultiplier;
 
     //Rigidbody2D reference
     private Rigidbody2D rb;
@@ -44,15 +47,10 @@ public class PlayerController : MonoBehaviour
     {
         //Uses a vertical linecast to see if the player is touching the ground
         grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
+        if (grounded)
+            anim.SetBool("Grounded", true);
 
-
-        if (Input.GetButtonDown("Jump") && grounded)
-        {
-            //rb.velocity = Vector2.up * jumpForce;
-            rb.AddForce(Vector2.up * jumpForce);
-        }
-        
-        if(Input.GetButton("Horizontal"))
+        if (Input.GetButton("Horizontal"))
         {
             anim.SetBool("IsMoving", true);
         }
@@ -61,23 +59,27 @@ public class PlayerController : MonoBehaviour
         {
             anim.SetBool("IsMoving", false);
         }
+
+        //jump code comes from the following video https://www.youtube.com/watch?v=7KiK0Aqtmzc
+        //allows player to fall faster
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity += Vector2.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        }
+        else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
+        {
+            rb.velocity += Vector2.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+        }
     }
 
     void FixedUpdate()
     {
         h = Input.GetAxis("Horizontal");
-        
-        if (h != 0)
-            rb.velocity = (Vector2.right * h * moveForce);
-        else
-            rb.velocity = Vector2.zero;
 
         //The following two conditionals create a speed cap
-        /*
         if (h * rb.velocity.x < maxSpeed)
         {
             rb.AddForce(Vector2.right * h * moveForce);
-           
         }
 
         if (Mathf.Abs(rb.velocity.x) > maxSpeed)
@@ -85,7 +87,12 @@ public class PlayerController : MonoBehaviour
             //Mathf.Sign returns -1 or 1 depending on the sign of the input
             rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
         }
-        */
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            rb.AddForce(Vector2.up * jumpForce);
+            anim.SetBool("Grounded", false);
+        }
 
         //Flips when hitting 'right' and facing left
         if (h > 0 && !facingRight)
@@ -104,4 +111,6 @@ public class PlayerController : MonoBehaviour
         transform.localScale = theScale;
     }
 }
+
+
 
