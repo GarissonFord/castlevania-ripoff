@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     //Tells us when the player is airborne 
     public bool jump;
 
+    public bool crouching;
+
     //i.e. Speed
     public float moveForce;
     public float maxSpeed;
@@ -33,6 +35,26 @@ public class PlayerController : MonoBehaviour
 
     public SpriteRenderer sr;
     Animator anim;
+
+    /* Okay, so what I need to do is set the player's velocity to zero
+     * when they are in the crouching and attack animations. This will
+     * involve code from the old beat-em up game I made about a year 
+     * ago where I can monitor animation states
+     * 
+     * The following is some of that code.
+     */
+
+    AnimatorStateInfo currentStateInfo;
+
+    //Current animation state
+    static int currentState;
+    //Numerical representations of the idle and walk animation states
+    static int idleState = Animator.StringToHash("Base Layer.PlayerIdle");
+    static int walkState = Animator.StringToHash("Base Layer.PlayerRun");
+    static int attackState = Animator.StringToHash("Base Layer.PlayerAttack");
+    static int jumpState = Animator.StringToHash("Base Layer.PlayerJump");
+    static int crouchState = Animator.StringToHash("Base Layer.PlayerCrouch");
+    static int hurtState = Animator.StringToHash("Base Layer.PlayerHurt");
 
     // Use this for initialization
     void Awake()
@@ -64,6 +86,24 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Attack"))
             anim.SetTrigger("Attack");
 
+        //'Animates' the crouch
+
+        if (Input.GetButtonDown("Crouch"))
+        {
+            crouching = true;
+            anim.SetBool("Crouching", true);
+        }
+
+        if (Input.GetButtonUp("Crouch"))
+        {
+            crouching = false;
+            anim.SetBool("Crouching", false);
+        }
+
+        //Just to test the hurt animation
+        if (Input.GetButtonDown("Fire2"))
+            anim.SetTrigger("Hurt");
+
         //jump code comes from the following video https://www.youtube.com/watch?v=7KiK0Aqtmzc
         //allows player to fall faster
         if (rb.velocity.y < 0)
@@ -74,6 +114,20 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity += Vector2.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
         }
+
+        //0th index is the base layer
+        currentStateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        currentState = currentStateInfo.fullPathHash;
+
+        //Player shouldn't be moving while attacking
+        /*
+        if (currentState == attackState)
+            Debug.Log("Attacking");
+
+        if (currentState == crouchState)
+            Debug.Log("Crouching");
+        */
+
     }
 
     void FixedUpdate()
@@ -90,6 +144,24 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             anim.SetBool("Grounded", false);
         }
+
+        //The following three animation states should not allow a player to move while 
+        //they are the current state
+
+        if (crouching)
+            rb.velocity = Vector2.zero;
+        else
+            rb.velocity = rb.velocity;
+
+        if (currentState == attackState)
+            rb.velocity = Vector2.zero;
+        else
+            rb.velocity = rb.velocity;
+
+        if (currentState == hurtState)
+            rb.velocity = Vector2.zero;
+        else
+            rb.velocity = rb.velocity;
 
         //Flips when hitting 'right' and facing left
         if (h > 0 && !facingRight)
