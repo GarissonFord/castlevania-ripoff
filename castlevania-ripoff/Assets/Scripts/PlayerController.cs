@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     public bool jump;
 
     public bool crouching;
-
+    
     //i.e. Speed
     public float moveForce;
     public float maxSpeed;
@@ -55,6 +55,17 @@ public class PlayerController : MonoBehaviour
     static int jumpState = Animator.StringToHash("Base Layer.PlayerJump");
     static int crouchState = Animator.StringToHash("Base Layer.PlayerCrouch");
     static int hurtState = Animator.StringToHash("Base Layer.PlayerHurt");
+
+    /* Okay now what I need to do is create hitboxes 
+     * that are only active when a specific frame is
+     * being rendered
+     */
+
+    //Our hitbox
+    public GameObject attackHitBox;
+
+    //The sprite that our attack hitbox will be tied to
+    public Sprite attackHitSprite;
 
     // Use this for initialization
     void Awake()
@@ -162,6 +173,13 @@ public class PlayerController : MonoBehaviour
             rb.velocity = Vector2.zero;
         else
             rb.velocity = rb.velocity;
+
+        //Testing if the right sprite is being rendered
+        if (attackHitSprite == sr.sprite)
+        //If so, the hitbox is set to active and it can damage an enemy       
+            attackHitBox.gameObject.SetActive(true);
+        else
+            attackHitBox.gameObject.SetActive(false);
 
         //Flips when hitting 'right' and facing left
         if (h > 0 && !facingRight)
