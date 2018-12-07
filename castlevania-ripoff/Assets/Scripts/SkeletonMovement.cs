@@ -18,6 +18,7 @@ public class SkeletonMovement : MonoBehaviour {
     //Numerical representations of the idle and walk animation states
     static int riseState = Animator.StringToHash("Base Layer.SkeletonRise");
     static int walkState = Animator.StringToHash("Base Layer.SkeletonWalk");
+    static int deathState = Animator.StringToHash("Base Layer.EnemyDeath");
 
     // Use this for initialization
     void Start ()
@@ -42,11 +43,15 @@ public class SkeletonMovement : MonoBehaviour {
 
         if (currentState == walkState)
             rb.velocity = Vector2.right * moveSpeed;
+
+        if (currentState == deathState)
+            rb.velocity = Vector2.zero;
     }
 
     public void Die()
     {
         anim.SetBool("Dead", true);
+        Destroy(gameObject.GetComponent<Collider2D>());
         StartCoroutine(KillOnAnimationEnd());
     }
 

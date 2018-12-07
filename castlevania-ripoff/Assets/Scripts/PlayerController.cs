@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("Crouching", false);
         }
 
-        //Just to test the hurt animation
+        //Just to test the hurt animation, Fire2 is set to k
         if (Input.GetButtonDown("Fire2"))
             anim.SetTrigger("Hurt");
 
@@ -139,6 +139,9 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Crouching");
         */
 
+        //Fire3 is set to t
+        if (Input.GetButtonDown("Fire3"))
+            Die();
     }
 
     void FixedUpdate()
@@ -196,6 +199,20 @@ public class PlayerController : MonoBehaviour
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
+    }
+
+    public void Die()
+    {
+        sr.color = Color.red;
+        //Destroy(gameObject.GetComponent<Collider2D>());
+        StartCoroutine(KillOnAnimationEnd());
+    }
+
+    //Uses time from the enemy death animation
+    private IEnumerator KillOnAnimationEnd()
+    {
+        yield return new WaitForSeconds(1.0f);
+        Destroy(gameObject);
     }
 }
 

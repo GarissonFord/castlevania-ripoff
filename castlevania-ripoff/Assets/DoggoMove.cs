@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GhostMovement : MonoBehaviour {
+public class DoggoMove : MonoBehaviour {
 
-    Animator anim;
+    public float moveSpeed;
     Rigidbody2D rb;
 
-    public float moveSpeed, frequency, magnitude;
-
-    Vector3 pos, localScale;
+    Animator anim;
 
     AnimatorStateInfo currentStateInfo;
+
     //Current animation state
     static int currentState;
     //Numerical representations of the idle and walk animation states
@@ -20,8 +19,6 @@ public class GhostMovement : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        pos = transform.position;
-        localScale = transform.localScale;
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
 	}
@@ -32,19 +29,13 @@ public class GhostMovement : MonoBehaviour {
         //0th index is the base layer
         currentStateInfo = anim.GetCurrentAnimatorStateInfo(0);
         currentState = currentStateInfo.fullPathHash;
-        Move();
+        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
 	}
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (currentState == deathState)
             rb.velocity = Vector2.zero;
-    }
-
-    void Move()
-    {
-        pos -= transform.right * Time.deltaTime * moveSpeed;
-        transform.position = pos + transform.up * Mathf.Sin(Time.time * frequency) * magnitude;
     }
 
     public void Die()

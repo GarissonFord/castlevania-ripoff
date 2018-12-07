@@ -33,22 +33,17 @@ public class ScrollingBackground : MonoBehaviour
 
     private void Update()
     {
-        //if (paralax)
-        //{
-            float deltaX = cameraTransform.position.x - lastCameraX;
-            transform.position += Vector3.right * (deltaX * paralaxSpeed);
-        //}
+        float deltaX = cameraTransform.position.x - lastCameraX;
+        transform.position += Vector3.right * (deltaX * paralaxSpeed);
 
         lastCameraX = cameraTransform.position.x;
 
-        //if (scrolling)
-        //{
-            if (cameraTransform.position.x < (layers[leftIndex].transform.position.x + viewZone))
-                ScrollLeft();
+        if (cameraTransform.position.x < (layers[leftIndex].transform.position.x + viewZone))
+            ScrollLeft();
 
-            if (cameraTransform.position.x > (layers[rightIndex].transform.position.x - viewZone))
-                ScrollRight();
-        //}
+        if (cameraTransform.position.x > (layers[rightIndex].transform.position.x - viewZone))
+            ScrollRight();
+        
     }
 
     private void ScrollLeft()
