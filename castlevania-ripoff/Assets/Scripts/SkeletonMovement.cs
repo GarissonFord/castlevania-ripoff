@@ -43,4 +43,18 @@ public class SkeletonMovement : MonoBehaviour {
         if (currentState == walkState)
             rb.velocity = Vector2.right * moveSpeed;
     }
+
+    public void Die()
+    {
+        anim.SetBool("Dead", true);
+        StartCoroutine(KillOnAnimationEnd());
+        //Then something to destroy the object after the animation plays
+    }
+
+    //Uses time from the enemy death animation
+    private IEnumerator KillOnAnimationEnd()
+    {
+        yield return new WaitForSeconds(0.417f);
+        Destroy(gameObject);
+    }
 }
