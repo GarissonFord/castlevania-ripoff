@@ -48,7 +48,6 @@ public class SkeletonMovement : MonoBehaviour {
     {
         anim.SetBool("Dead", true);
         StartCoroutine(KillOnAnimationEnd());
-        //Then something to destroy the object after the animation plays
     }
 
     //Uses time from the enemy death animation
