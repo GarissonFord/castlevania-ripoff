@@ -108,6 +108,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d98efc35ef37cf544806d64a381d4e50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pc: {fileID: 0}
+  healthbar: {fileID: 0}
+  damage: 5
   moveSpeed: 0.25
   frequency: 5
   magnitude: 0.25

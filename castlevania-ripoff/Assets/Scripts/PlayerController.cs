@@ -71,12 +71,15 @@ public class PlayerController : MonoBehaviour
     public AudioClip attackAudioClip, hurtAudioClip, deathAudioClip;
     AudioSource audio;
 
+    //Damage given when an attack lands
+    public float damage;
+
+    public PlayerController pc;
     //Player hitpoints
-    private float hitPoint = 100;
+    public float hitPoint = 100;
     private float maxHitPoint = 100;
     public Image currentHealthBar;
     public Text ratioText;
-
 
     // Use this for initialization
     void Awake()
@@ -85,6 +88,8 @@ public class PlayerController : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         audio = GetComponent<AudioSource>();
+        UpdateHealthbar();
+        pc = GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -225,6 +230,35 @@ public class PlayerController : MonoBehaviour
         anim.SetTrigger("Damage");
     }
 
+    private void TakeDamage(float damage)
+    {
+        hitPoint -= damage;
+        UpdateHealthbar();
+        //he ded
+        if (hitPoint <= 0)
+        {
+            audio.clip = deathAudioClip;
+            audio.Play();
+            hitPoint = 0;
+            StartCoroutine(KillOnAnimationEnd());
+        }
+        //he not ded
+        else
+        {
+            anim.SetTrigger("Damage");
+            audio.clip = hurtAudioClip;
+            audio.Play();
+            StartCoroutine(DamageFlash());
+        }
+    }
+
+    public void UpdateHealthbar()
+    {
+        float ratio = hitPoint / maxHitPoint;
+        currentHealthBar.rectTransform.localScale = new Vector3(ratio, 1, 1);
+        ratioText.text = (ratio * 100).ToString("0");
+    }
+
     private IEnumerator DamageFlash()
     {
         rb.velocity = Vector2.zero;
@@ -238,7 +272,6 @@ public class PlayerController : MonoBehaviour
         audio.clip = deathAudioClip;
         audio.Play();
         sr.color = Color.red;
-        //Destroy(gameObject.GetComponent<Collider2D>());
         StartCoroutine(KillOnAnimationEnd());
     }
 
