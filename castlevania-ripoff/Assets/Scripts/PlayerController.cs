@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -67,12 +68,23 @@ public class PlayerController : MonoBehaviour
     //The sprite that our attack hitbox will be tied to
     public Sprite attackHitSprite;
 
+    public AudioClip attackAudioClip, hurtAudioClip, deathAudioClip;
+    AudioSource audio;
+
+    //Player hitpoints
+    private float hitPoint = 100;
+    private float maxHitPoint = 100;
+    public Image currentHealthBar;
+    public Text ratioText;
+
+
     // Use this for initialization
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        audio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -95,7 +107,11 @@ public class PlayerController : MonoBehaviour
         }
 
         if (Input.GetButtonDown("Attack"))
+        {
+            audio.clip = attackAudioClip;
+            audio.Play();
             anim.SetTrigger("Attack");
+        }
 
         //'Animates' the crouch
 
@@ -113,7 +129,7 @@ public class PlayerController : MonoBehaviour
 
         //Just to test the hurt animation, Fire2 is set to k
         if (Input.GetButtonDown("Fire2"))
-            anim.SetTrigger("Hurt");
+            anim.SetTrigger("Damage");
 
         //jump code comes from the following video https://www.youtube.com/watch?v=7KiK0Aqtmzc
         //allows player to fall faster
@@ -200,9 +216,27 @@ public class PlayerController : MonoBehaviour
         theScale.x *= -1;
         transform.localScale = theScale;
     }
+    
+    public void Damage()
+    {
+        audio.clip = hurtAudioClip;
+        audio.Play();
+        StartCoroutine(DamageFlash());
+        anim.SetTrigger("Damage");
+    }
+
+    private IEnumerator DamageFlash()
+    {
+        rb.velocity = Vector2.zero;
+        sr.color = Color.red;
+        yield return new WaitForSeconds(0.5f);
+        sr.color = Color.white;
+    }
 
     public void Die()
     {
+        audio.clip = deathAudioClip;
+        audio.Play();
         sr.color = Color.red;
         //Destroy(gameObject.GetComponent<Collider2D>());
         StartCoroutine(KillOnAnimationEnd());

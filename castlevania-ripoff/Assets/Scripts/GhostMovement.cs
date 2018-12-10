@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GhostMovement : MonoBehaviour {
+public class GhostMovement : Enemy {
 
     Animator anim;
     Rigidbody2D rb;

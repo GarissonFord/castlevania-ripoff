@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkeletonMovement : MonoBehaviour {
+public class SkeletonMovement : Enemy {
 
     Rigidbody2D rb;
 
@@ -47,6 +47,8 @@ public class SkeletonMovement : MonoBehaviour {
         if (currentState == deathState)
             rb.velocity = Vector2.zero;
     }
+
+    
 
     public void Die()
     {

@@ -72,7 +72,7 @@ MonoBehaviour:
     type: 2}
   playerInRange: 0
   timeSinceLastSpawn: 0
-  timeBetweenSpawns: 3
+  timeBetweenSpawns: 5
 --- !u!212 &212788667172777052
 SpriteRenderer:
   m_ObjectHideFlags: 1
