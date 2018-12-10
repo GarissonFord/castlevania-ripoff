@@ -269,6 +269,7 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
+        rb.velocity = Vector2.zero;
         audio.clip = deathAudioClip;
         audio.Play();
         sr.color = Color.red;

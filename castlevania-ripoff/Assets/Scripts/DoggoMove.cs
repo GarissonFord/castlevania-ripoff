@@ -16,11 +16,17 @@ public class DoggoMove : Enemy {
     //Numerical representations of the idle and walk animation states
     static int deathState = Animator.StringToHash("Base Layer.EnemyDeath");
 
+    public AudioSource audio;
+
+    public bool dead;
+
     // Use this for initialization
-    void Start ()
+    void Awake ()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        audio = GetComponent<AudioSource>();
+        dead = false;
 	}
 	
 	// Update is called once per frame
@@ -29,7 +35,8 @@ public class DoggoMove : Enemy {
         //0th index is the base layer
         currentStateInfo = anim.GetCurrentAnimatorStateInfo(0);
         currentState = currentStateInfo.fullPathHash;
-        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+        if(!dead)
+            rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
 	}
 
     private void FixedUpdate()
@@ -40,6 +47,7 @@ public class DoggoMove : Enemy {
 
     public void Die()
     {
+        audio.Play();
         rb.velocity = Vector2.zero;
         anim.SetBool("Dead", true);
         StartCoroutine(KillOnAnimationEnd());

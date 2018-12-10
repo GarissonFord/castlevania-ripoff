@@ -7,7 +7,7 @@ public class GhostMovement : Enemy {
     Animator anim;
     Rigidbody2D rb;
 
-    public float moveSpeed, frequency, magnitude;
+    public float moveSpeed, frequency, magnitude, amplitude;
 
     Vector3 pos, localScale;
 
@@ -17,13 +17,19 @@ public class GhostMovement : Enemy {
     //Numerical representations of the idle and walk animation states
     static int deathState = Animator.StringToHash("Base Layer.EnemyDeath");
 
+    public AudioSource audio;
+
+    public bool dead;
+
     // Use this for initialization
-    void Start ()
+    void Awake ()
     {
         pos = transform.position;
         localScale = transform.localScale;
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        audio = GetComponent<AudioSource>();
+        dead = false;
 	}
 	
 	// Update is called once per frame
@@ -32,7 +38,8 @@ public class GhostMovement : Enemy {
         //0th index is the base layer
         currentStateInfo = anim.GetCurrentAnimatorStateInfo(0);
         currentState = currentStateInfo.fullPathHash;
-        Move();
+        if(!dead)
+            Move();
 	}
 
     void FixedUpdate()
@@ -44,11 +51,13 @@ public class GhostMovement : Enemy {
     void Move()
     {
         pos -= transform.right * Time.deltaTime * moveSpeed;
-        transform.position = pos + transform.up * Mathf.Sin(Time.time * frequency) * magnitude;
+        transform.position = pos + transform.up * amplitude * Mathf.Sin(Time.time * frequency) * magnitude;
     }
 
     public void Die()
     {
+        audio.Play();
+        dead = true;
         rb.velocity = Vector2.zero;
         anim.SetBool("Dead", true);
         StartCoroutine(KillOnAnimationEnd());

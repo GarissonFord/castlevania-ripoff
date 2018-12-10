@@ -20,12 +20,18 @@ public class SkeletonMovement : Enemy {
     static int walkState = Animator.StringToHash("Base Layer.SkeletonWalk");
     static int deathState = Animator.StringToHash("Base Layer.EnemyDeath");
 
+    public AudioSource audio;
+
+    public bool dead;
+
     // Use this for initialization
-    void Start ()
+    void Awake ()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        audio = GetComponent<AudioSource>();
+        dead = false;
 	}
 	
 	// Update is called once per frame
@@ -38,20 +44,22 @@ public class SkeletonMovement : Enemy {
 
     void FixedUpdate()
     {
-        if (currentState == riseState)
-            rb.velocity = Vector2.zero;
+        if (!dead)
+        {
+            if (currentState == riseState)
+                rb.velocity = Vector2.zero;
 
-        if (currentState == walkState)
-            rb.velocity = Vector2.right * moveSpeed;
+            if (currentState == walkState)
+                rb.velocity = Vector2.right * moveSpeed;
+        }
 
         if (currentState == deathState)
             rb.velocity = Vector2.zero;
     }
 
-    
-
     public void Die()
     {
+        audio.Play();
         anim.SetBool("Dead", true);
         Destroy(gameObject.GetComponent<Collider2D>());
         StartCoroutine(KillOnAnimationEnd());
