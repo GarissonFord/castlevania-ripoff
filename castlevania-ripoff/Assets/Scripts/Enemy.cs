@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour {
     //Damage the enemy deals
     public float damage;
 
-    private void Awake()
+    private void Start()
     {
         pc = FindObjectOfType<PlayerController>();
     }
