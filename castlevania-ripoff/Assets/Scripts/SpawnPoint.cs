@@ -5,31 +5,32 @@ using UnityEngine;
 public class SpawnPoint : MonoBehaviour {
 
     public GameObject enemyToSpawn;
-    public bool playerInRange;
+    public Transform whereToSpawn;
+    public bool spawned;
+    //public bool playerInRange;
 
-    public float timeSinceLastSpawn, timeBetweenSpawns;
+    /* Residual code from when this prototype was going to have
+     * enemies spawning at regular intervals from these points
+     * 
+     * */
+    //public float timeSinceLastSpawn, timeBetweenSpawns;
 
-    public void Update()
+    private void Awake()
     {
-        //If player is close enough
-        if (playerInRange)
-        {
-            //Start spawning enemies incrementally
-            if (Time.time - timeSinceLastSpawn >= timeBetweenSpawns)
-            {
-                Instantiate(enemyToSpawn, new Vector3(transform.position.x, -0.05f, 0.0f), gameObject.transform.rotation);
-                timeSinceLastSpawn = Time.time;
-            }
-        }
+        spawned = false;
     }
-    
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        playerInRange = true;
+        if(!spawned)
+            Instantiate(enemyToSpawn, whereToSpawn);
+        spawned = true;
     }
 
+    /* Same down here 
     private void OnTriggerExit2D(Collider2D collision)
     {
         playerInRange = false;
     }
+    */
 }

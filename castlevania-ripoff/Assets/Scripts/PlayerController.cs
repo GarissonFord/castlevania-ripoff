@@ -67,6 +67,8 @@ public class PlayerController : MonoBehaviour
 
     //The sprite that our attack hitbox will be tied to
     public Sprite attackHitSprite;
+    //For ded
+    public Sprite deathSprite;
 
     public AudioClip attackAudioClip, hurtAudioClip, deathAudioClip;
     AudioSource audio;
@@ -81,6 +83,10 @@ public class PlayerController : MonoBehaviour
     public Image currentHealthBar;
     public Text ratioText;
 
+    public GameController gameController;
+
+    public bool dead;
+
     // Use this for initialization
     void Awake()
     {
@@ -90,6 +96,8 @@ public class PlayerController : MonoBehaviour
         audio = GetComponent<AudioSource>();
         UpdateHealthbar();
         pc = GetComponent<PlayerController>();
+        gameController = FindObjectOfType<GameController>();
+        dead = false;
     }
 
     // Update is called once per frame
@@ -167,50 +175,53 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        //Represents if player is moving in the positive or negative direction
-        h = Input.GetAxis("Horizontal");
-
-        //The player is moving if h isn't 0, so we set to a static velocity
-        if (h != 0)
-            rb.velocity = new Vector2(h * moveForce, rb.velocity.y);
-
-        if (Input.GetButtonDown("Jump"))
+        if (!dead)
         {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            anim.SetBool("Grounded", false);
+            //Represents if player is moving in the positive or negative direction
+            h = Input.GetAxis("Horizontal");
+
+            //The player is moving if h isn't 0, so we set to a static velocity
+            if (h != 0)
+                rb.velocity = new Vector2(h * moveForce, rb.velocity.y);
+
+            if (Input.GetButtonDown("Jump"))
+            {
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                anim.SetBool("Grounded", false);
+            }
+
+            //The following three animation states should not allow a player to move while 
+            //they are the current state
+
+            if (crouching)
+                rb.velocity = Vector2.zero;
+            else
+                rb.velocity = rb.velocity;
+
+            if (currentState == attackState)
+                rb.velocity = Vector2.zero;
+            else
+                rb.velocity = rb.velocity;
+
+            if (currentState == hurtState)
+                rb.velocity = Vector2.zero;
+            else
+                rb.velocity = rb.velocity;
+
+            //Testing if the right sprite is being rendered
+            if (attackHitSprite == sr.sprite)
+                //If so, the hitbox is set to active and it can damage an enemy       
+                attackHitBox.gameObject.SetActive(true);
+            else
+                attackHitBox.gameObject.SetActive(false);
+
+            //Flips when hitting 'right' and facing left
+            if (h > 0 && !facingRight)
+                Flip();
+            //Flips when hitting 'left' and facing right
+            else if (h < 0 && facingRight)
+                Flip();
         }
-
-        //The following three animation states should not allow a player to move while 
-        //they are the current state
-
-        if (crouching)
-            rb.velocity = Vector2.zero;
-        else
-            rb.velocity = rb.velocity;
-
-        if (currentState == attackState)
-            rb.velocity = Vector2.zero;
-        else
-            rb.velocity = rb.velocity;
-
-        if (currentState == hurtState)
-            rb.velocity = Vector2.zero;
-        else
-            rb.velocity = rb.velocity;
-
-        //Testing if the right sprite is being rendered
-        if (attackHitSprite == sr.sprite)
-        //If so, the hitbox is set to active and it can damage an enemy       
-            attackHitBox.gameObject.SetActive(true);
-        else
-            attackHitBox.gameObject.SetActive(false);
-
-        //Flips when hitting 'right' and facing left
-        if (h > 0 && !facingRight)
-            Flip();
-        //Flips when hitting 'left' and facing right
-        else if (h < 0 && facingRight)
-            Flip();
     }
 
     //Changes rotation of the player
@@ -237,6 +248,8 @@ public class PlayerController : MonoBehaviour
         //he ded
         if (hitPoint <= 0)
         {
+            dead = true;
+            gameController.GameOver();
             audio.clip = deathAudioClip;
             audio.Play();
             hitPoint = 0;
@@ -279,7 +292,10 @@ public class PlayerController : MonoBehaviour
     //Uses time from the enemy death animation
     private IEnumerator KillOnAnimationEnd()
     {
+        sr.sprite = deathSprite;
+        sr.color = Color.red;
         yield return new WaitForSeconds(1.0f);
+        //gameObject.SetActive(false);
         Destroy(gameObject);
     }
 }

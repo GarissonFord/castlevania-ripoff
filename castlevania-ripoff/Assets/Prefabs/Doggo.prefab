@@ -206,8 +206,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pc: {fileID: 0}
   damage: 5
-  moveSpeed: -1
+  moveSpeed: -1.5
   audio: {fileID: 0}
+  dead: 0
 --- !u!212 &212786977355221822
 SpriteRenderer:
   m_ObjectHideFlags: 1
