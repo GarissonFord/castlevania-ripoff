@@ -141,6 +141,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //Just to test the hurt animation, Fire2 is set to k
+        //Now this is to test death
         if (Input.GetButtonDown("Fire2"))
             anim.SetTrigger("Damage");
 
@@ -170,7 +171,10 @@ public class PlayerController : MonoBehaviour
 
         //Fire3 is set to t
         if (Input.GetButtonDown("Fire3"))
+        {
             Die();
+            gameController.GameOver();
+        }
     }
 
     void FixedUpdate()
