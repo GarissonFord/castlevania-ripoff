@@ -191,7 +191,7 @@ public class PlayerController : MonoBehaviour
             if (h != 0)
                 rb.velocity = new Vector2(h * moveForce, rb.velocity.y);
 
-            if (Input.GetButtonDown("Jump"))
+            if (Input.GetButtonDown("Jump") && currentState != jumpState)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 anim.SetBool("Grounded", false);
