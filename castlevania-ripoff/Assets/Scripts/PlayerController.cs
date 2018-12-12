@@ -87,6 +87,8 @@ public class PlayerController : MonoBehaviour
 
     public bool dead;
 
+    public GameOverMenuScript goms;
+
     // Use this for initialization
     void Awake()
     {
@@ -98,6 +100,7 @@ public class PlayerController : MonoBehaviour
         pc = GetComponent<PlayerController>();
         gameController = FindObjectOfType<GameController>();
         dead = false;
+        goms = FindObjectOfType<GameOverMenuScript>();
     }
 
     // Update is called once per frame
@@ -173,7 +176,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Fire3"))
         {
             Die();
-            gameController.GameOver();
+            goms.GameOver();
         }
     }
 
@@ -252,12 +255,8 @@ public class PlayerController : MonoBehaviour
         //he ded
         if (hitPoint <= 0)
         {
-            dead = true;
-            gameController.GameOver();
-            audio.clip = deathAudioClip;
-            audio.Play();
             hitPoint = 0;
-            StartCoroutine(KillOnAnimationEnd());
+            Die();
         }
         //he not ded
         else
@@ -286,6 +285,10 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
+        dead = true;
+        audio.clip = deathAudioClip;
+        audio.Play();
+        goms.GameOver();
         rb.velocity = Vector2.zero;
         audio.clip = deathAudioClip;
         audio.Play();

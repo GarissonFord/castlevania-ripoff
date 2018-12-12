@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
+    //Bricked until I find use for it
+
+    /*
     public Canvas gameOverScreen;
     public Button restartButton, quitButton;
 
@@ -22,6 +25,8 @@ public class GameController : MonoBehaviour {
     {
         //Create a menu to either quit or restart the level
         gameOverScreen.enabled = true;
+        restartButton.enabled = true;
+        quitButton.enabled = true;
         Debug.Log("GameOver entered");
     }
 
@@ -35,4 +40,5 @@ public class GameController : MonoBehaviour {
     {
         Debug.Log("Quit Clicked");
     }
+    */
 }
