@@ -7,7 +7,7 @@ public class GhostMovement : Enemy {
     Animator anim;
     Rigidbody2D rb;
 
-    public float moveSpeed, frequency, magnitude, amplitude;
+    public float /*moveSpeed*/ frequency, magnitude, amplitude;
 
     Vector3 pos, localScale;
 
@@ -21,6 +21,8 @@ public class GhostMovement : Enemy {
 
     public bool dead;
 
+    //public SpriteRenderer sr;
+
     // Use this for initialization
     void Awake ()
     {
@@ -30,6 +32,7 @@ public class GhostMovement : Enemy {
         rb = GetComponent<Rigidbody2D>();
         audio = GetComponent<AudioSource>();
         dead = false;
+        sr = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame

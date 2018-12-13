@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DoggoMove : Enemy {
 
-    public float moveSpeed;
+    //public float moveSpeed;
     Rigidbody2D rb;
 
     Animator anim;
@@ -27,6 +27,7 @@ public class DoggoMove : Enemy {
         rb = GetComponent<Rigidbody2D>();
         audio = GetComponent<AudioSource>();
         dead = false;
+        sr = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
