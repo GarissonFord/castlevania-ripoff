@@ -4,11 +4,8 @@ using UnityEngine;
 
 public class DestroyByContact : MonoBehaviour
 {
-    private void Start()
-    {
-        //sm = FindObjectOfType<SkeletonMovement>();
-    }
-    //Destroys an object if it's an enemy
+    //This script is for the hitbox used by the player whenever they attack
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))       

@@ -9,25 +9,27 @@ public class DoggoMove : Enemy {
 
     Animator anim;
 
-    AnimatorStateInfo currentStateInfo;
-
-    //Current animation state
-    static int currentState;
-    //Numerical representations of the idle and walk animation states
-    static int deathState = Animator.StringToHash("Base Layer.EnemyDeath");
-
     public AudioSource audio;
 
+    //Lets us know the which animation state is current playing
+    AnimatorStateInfo currentStateInfo;
+    //int representing the state
+    static int currentState;
+    
+    //The run animation is always playing so we only need a reference to the death animation
+    static int deathState = Animator.StringToHash("Base Layer.EnemyDeath");
+
+    //We'll need this to prevent the enemy from moving while their death animation plays
     public bool dead;
 
     // Use this for initialization
     void Awake ()
     {
-        anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
         audio = GetComponent<AudioSource>();
         dead = false;
-        sr = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
@@ -36,6 +38,7 @@ public class DoggoMove : Enemy {
         //0th index is the base layer
         currentStateInfo = anim.GetCurrentAnimatorStateInfo(0);
         currentState = currentStateInfo.fullPathHash;
+        //Dog is moving as long as they aren't dead
         if(!dead)
             rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
 	}
@@ -43,14 +46,15 @@ public class DoggoMove : Enemy {
     private void FixedUpdate()
     {
         if (currentState == deathState)
-            rb.velocity = Vector2.zero;
+            rb.velocity = Vector2.zero;            
     }
 
     public void Die()
     {
-        audio.Play();
         rb.velocity = Vector2.zero;
         anim.SetBool("Dead", true);
+        audio.Play();
+        dead = true;
         StartCoroutine(KillOnAnimationEnd());
     }
 

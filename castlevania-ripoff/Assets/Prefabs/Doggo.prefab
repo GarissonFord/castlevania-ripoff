@@ -19,12 +19,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4181782846866424}
-  - component: {fileID: 212786977355221822}
-  - component: {fileID: 95396914090345092}
-  - component: {fileID: 114341473718123416}
   - component: {fileID: 50948433830640670}
   - component: {fileID: 70105382520070794}
+  - component: {fileID: 212786977355221822}
+  - component: {fileID: 95396914090345092}
   - component: {fileID: 82292057578057622}
+  - component: {fileID: 114341473718123416}
   m_Layer: 0
   m_Name: Doggo
   m_TagString: Enemy
@@ -204,9 +204,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58ab06f9a3146aa499b78eaa7cc12254, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pc: {fileID: 0}
-  damage: 5
   moveSpeed: -1.5
+  hitPoint: 100
+  damage: 5
+  sr: {fileID: 0}
+  pc: {fileID: 0}
   audio: {fileID: 0}
   dead: 0
 --- !u!212 &212786977355221822

@@ -59,9 +59,10 @@ public class SkeletonMovement : Enemy {
 
     public void Die()
     {
-        audio.Play();
+        rb.velocity = Vector2.zero;
         anim.SetBool("Dead", true);
-        Destroy(gameObject.GetComponent<Collider2D>());
+        audio.Play();
+        dead = true;
         StartCoroutine(KillOnAnimationEnd());
     }
 

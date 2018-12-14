@@ -19,12 +19,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4427132429151792}
-  - component: {fileID: 212199874069067732}
-  - component: {fileID: 61627769355978940}
-  - component: {fileID: 95218164798283464}
-  - component: {fileID: 114007883920420656}
   - component: {fileID: 50465546865161288}
+  - component: {fileID: 61627769355978940}
+  - component: {fileID: 212199874069067732}
+  - component: {fileID: 95218164798283464}
   - component: {fileID: 82708020718851162}
+  - component: {fileID: 114007883920420656}
   m_Layer: 0
   m_Name: Skeleton
   m_TagString: Enemy
@@ -214,8 +214,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de30442a6b1b785449387c3ce5d7fc9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pc: {fileID: 0}
+  moveSpeed: -0.75
+  hitPoint: 100
   damage: 5
+  sr: {fileID: 0}
+  pc: {fileID: 0}
   moveSpeed: -0.75
   sr: {fileID: 0}
   audio: {fileID: 0}

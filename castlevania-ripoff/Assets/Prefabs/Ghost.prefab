@@ -19,12 +19,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4063347353285048}
+  - component: {fileID: 50075735588622128}
+  - component: {fileID: 70908546970590946}
   - component: {fileID: 212460055155855532}
   - component: {fileID: 95081303421639672}
-  - component: {fileID: 70908546970590946}
-  - component: {fileID: 114045020755597192}
-  - component: {fileID: 50075735588622128}
   - component: {fileID: 82267391245679824}
+  - component: {fileID: 114045020755597192}
   m_Layer: 0
   m_Name: Ghost
   m_TagString: Enemy
@@ -204,9 +204,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d98efc35ef37cf544806d64a381d4e50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pc: {fileID: 0}
-  damage: 5
   moveSpeed: 0.5
+  hitPoint: 100
+  damage: 5
+  sr: {fileID: 0}
+  pc: {fileID: 0}
   frequency: 5
   magnitude: 0.25
   amplitude: 0.75

@@ -4,14 +4,21 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
-    public PlayerController pc;
+    //Fields that all enemies will have access to
+
     public float moveSpeed;
 
-    private float hitPoint = 100;
+    //Health
+    public float hitPoint;
     private float maxHitPoint = 100;
+
     //Damage the enemy deals
     public float damage;
+
     public SpriteRenderer sr;
+
+    //So we can call upon the player to take damage once we collide with them
+    public PlayerController pc;
 
     private void Start()
     {
@@ -23,6 +30,13 @@ public class Enemy : MonoBehaviour {
         if (collider.gameObject.CompareTag("Player"))
             pc.SendMessageUpwards("TakeDamage", damage);
 
+        /* Some enemies like skeletons and the dogs are scripted to
+         * run in one single direction against the ground. Because
+         * they're kinematic rigidbodies, they don't respond to gravity,
+         * and as a result, they will walk right over pits. Instead, 
+         * colliders will be set up at edges so that the enemies change
+         * the direction they're moving once approaching them
+         */
         if (collider.gameObject.CompareTag("Edge"))
         {
             moveSpeed = -moveSpeed;
@@ -32,6 +46,8 @@ public class Enemy : MonoBehaviour {
 
     public void TakeDamage(float damage)
     {
-        //We'll get to this later
+        /* We'll get to this later when enemies have actual health
+         * 
+         */
     }
 }
