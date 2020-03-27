@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class GhostMovement : Enemy {
 
-    Animator anim;
+    //Component references
     Rigidbody2D rb;
+    Animator anim;
+    public AudioSource audio;
 
-    public float /*moveSpeed*/ frequency, magnitude, amplitude;
+    /* These three variables determine the size and shape of the sine wave
+     * pattern that the ghost moves in
+     */ 
+    public float frequency, magnitude, amplitude;
 
     Vector3 pos, localScale;
 
@@ -17,22 +22,19 @@ public class GhostMovement : Enemy {
     //Numerical representations of the idle and walk animation states
     static int deathState = Animator.StringToHash("Base Layer.EnemyDeath");
 
-    public AudioSource audio;
-
     public bool dead;
-
-    //public SpriteRenderer sr;
 
     // Use this for initialization
     void Awake ()
     {
+        rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
+        audio = GetComponent<AudioSource>();
+
         pos = transform.position;
         localScale = transform.localScale;
-        anim = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody2D>();
-        audio = GetComponent<AudioSource>();
         dead = false;
-        sr = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
@@ -41,6 +43,7 @@ public class GhostMovement : Enemy {
         //0th index is the base layer
         currentStateInfo = anim.GetCurrentAnimatorStateInfo(0);
         currentState = currentStateInfo.fullPathHash;
+        //Without this, the object continues moving while the death animation plays
         if(!dead)
             Move();
 	}
@@ -54,6 +57,7 @@ public class GhostMovement : Enemy {
     void Move()
     {
         pos -= transform.right * Time.deltaTime * moveSpeed;
+        //This allows the ghost to move in the sine wave pattern
         transform.position = pos + transform.up * amplitude * Mathf.Sin(Time.time * frequency) * magnitude;
     }
 

@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class GameOverMenuScript : MonoBehaviour
 {
+    /* The quitMenu is a separate Canvas that appears when you decide to select
+     * 'quit' button in the game over Canvas
+     */ 
     public Canvas gameOverMenu, quitMenu;
 
     // Use this for initialization
@@ -19,6 +22,9 @@ public class GameOverMenuScript : MonoBehaviour
     {
         //Create a menu to either quit or restart the level
         gameOverMenu.enabled = true;
+        /* In case we go back to the GameOver menu after clicking on 'No'
+         * when the quitMenu asks "Are you sure you want to quit?"
+         */ 
         quitMenu.enabled = false;
     }
 
@@ -29,6 +35,7 @@ public class GameOverMenuScript : MonoBehaviour
 
     public void QuitGame()
     {
+        //Asks "Are you sure you want to quit?"
         quitMenu.enabled = true;
         gameOverMenu.enabled = false;
     }
@@ -40,6 +47,7 @@ public class GameOverMenuScript : MonoBehaviour
 
     public void No()
     {
+        //Brings us back to the first game over menu
         GameOver();
     }
 }

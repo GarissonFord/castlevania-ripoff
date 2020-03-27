@@ -22,6 +22,7 @@ public class Healthbar : MonoBehaviour
     public void UpdateHealthbar()
     {
         float ratio = hitPoint / maxHitPoint;
+        //Healthbar is shrunken to reflect the drop in HP 
         currentHealthBar.rectTransform.localScale = new Vector3(ratio, 1, 1);
         ratioText.text = (ratio * 100).ToString("0");
     }

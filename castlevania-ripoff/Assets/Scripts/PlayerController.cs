@@ -5,14 +5,18 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    //Used for the Flip() function
-    public bool facingRight = true;
+    //Component References
+    private Rigidbody2D rb;
+    private SpriteRenderer sr;
+    private Animator anim;
 
-    //Tells us when the player is airborne 
-    public bool jump;
+    ////////////////////////////////
+    //Everything Physics related //
+    //////////////////////////////
 
-    public bool crouching;
-    
+    //Our GetAxis value for movement
+    public float h;
+
     //i.e. Speed
     public float moveForce;
     public float maxSpeed;
@@ -20,36 +24,29 @@ public class PlayerController : MonoBehaviour
     //Power of a jump
     public float jumpForce;
 
-    //https://www.youtube.com/watch?v=7KiK0Aqtmzc
-    public float fallMultiplier;
-    public float lowJumpMultiplier;
-
-    //Rigidbody2D reference
-    private Rigidbody2D rb;
-
     //To check when the player is touching the ground
     public Transform groundCheck;
     public bool grounded;
 
-    //Our GetAxis value for movement
-    public float h;
+    //Tells us when the player is airborne 
+    public bool jump;
 
-    public SpriteRenderer sr;
-    Animator anim;
+    //https://www.youtube.com/watch?v=7KiK0Aqtmzc
+    //Allows the player to fall faster than the physics engine normally would allow
+    public float fallMultiplier;
+    public float lowJumpMultiplier;
 
-    /* Okay, so what I need to do is set the player's velocity to zero
-     * when they are in the crouching and attack animations. This will
-     * involve code from the old beat-em up game I made about a year 
-     * ago where I can monitor animation states
-     * 
-     * The following is some of that code.
-     */
+    //The hitbox for the player's attack
+    public GameObject attackHitBox;
+
+    /////////////////////////////
+    //Everything for Animation//
+    ///////////////////////////
 
     AnimatorStateInfo currentStateInfo;
-
-    //Current animation state
+    //Integer that will represent the current animation state
     static int currentState;
-    //Numerical representations of the idle and walk animation states
+    //Integer representations of all of the player's animations
     static int idleState = Animator.StringToHash("Base Layer.PlayerIdle");
     static int walkState = Animator.StringToHash("Base Layer.PlayerRun");
     static int attackState = Animator.StringToHash("Base Layer.PlayerAttack");
@@ -57,36 +54,43 @@ public class PlayerController : MonoBehaviour
     static int crouchState = Animator.StringToHash("Base Layer.PlayerCrouch");
     static int hurtState = Animator.StringToHash("Base Layer.PlayerHurt");
 
-    /* Okay now what I need to do is create hitboxes 
-     * that are only active when a specific frame is
-     * being rendered
-     */
-
-    //Our hitbox
-    public GameObject attackHitBox;
-
     //The sprite that our attack hitbox will be tied to
     public Sprite attackHitSprite;
-    //For ded
+    //the sprite
     public Sprite deathSprite;
 
+    //Used for the Flip() function
+    public bool facingRight = true;
+
+    //Boolean to let the player crouch frames be rendered
+    public bool crouching;
+    
+    /////////////////////////
+    //Everything for Audio//
+    ///////////////////////
     public AudioClip attackAudioClip, hurtAudioClip, deathAudioClip;
     AudioSource audio;
 
-    //Damage given when an attack lands
-    public float damage;
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    //The following are miscellaneous variables that contributes to the overall game's logic//
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-    public PlayerController pc;
-    //Player hitpoints
     public float hitPoint = 100;
     private float maxHitPoint = 100;
+    //How long a player can't move when they are hit
+    public float stunLockTime;
+    //References to the graphical representations of the player's health
     public Image currentHealthBar;
     public Text ratioText;
-
-    public GameController gameController;
-
     public bool dead;
+    /* The player will briefly be invincible after being hurt and this bool checks if the player 
+     * can take damage again
+     */ 
+    public bool vulnerable;
 
+    //References to objects/scripts not attached to the player
+    public PlayerController pc;
+    public GameController gameController;
     public GameOverMenuScript goms;
 
     // Use this for initialization
@@ -100,6 +104,7 @@ public class PlayerController : MonoBehaviour
         pc = GetComponent<PlayerController>();
         gameController = FindObjectOfType<GameController>();
         dead = false;
+        vulnerable = true;
         goms = FindObjectOfType<GameOverMenuScript>();
     }
 
@@ -109,7 +114,10 @@ public class PlayerController : MonoBehaviour
         //Uses a vertical linecast to see if the player is touching the ground
         grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
         if (grounded)
+        {
+            jump = false;
             anim.SetBool("Grounded", true);
+        }
 
         if (Input.GetButton("Horizontal"))
         {
@@ -130,7 +138,6 @@ public class PlayerController : MonoBehaviour
         }
 
         //'Animates' the crouch
-
         if (Input.GetButtonDown("Crouch"))
         {
             crouching = true;
@@ -143,13 +150,7 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("Crouching", false);
         }
 
-        //Just to test the hurt animation, Fire2 is set to k
-        //Now this is to test death
-        if (Input.GetButtonDown("Fire2"))
-            anim.SetTrigger("Damage");
-
-        //jump code comes from the following video https://www.youtube.com/watch?v=7KiK0Aqtmzc
-        //allows player to fall faster
+        // Jump code comes from the following video: https://www.youtube.com/watch?v=7KiK0Aqtmzc
         if (rb.velocity.y < 0)
         {
             rb.velocity += Vector2.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
@@ -159,41 +160,27 @@ public class PlayerController : MonoBehaviour
             rb.velocity += Vector2.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
         }
 
-        //0th index is the base layer
+        //Updates the current state
         currentStateInfo = anim.GetCurrentAnimatorStateInfo(0);
         currentState = currentStateInfo.fullPathHash;
-
-        //Player shouldn't be moving while attacking
-        /*
-        if (currentState == attackState)
-            Debug.Log("Attacking");
-
-        if (currentState == crouchState)
-            Debug.Log("Crouching");
-        */
-
-        //Fire3 is set to t
-        if (Input.GetButtonDown("Fire3"))
-        {
-            Die();
-            goms.GameOver();
-        }
     }
 
     void FixedUpdate()
     {
+        //If not checking for death, then the player could still move even in the death animation
         if (!dead)
         {
-            //Represents if player is moving in the positive or negative direction
+            //Can range from -1 to 1, 0 means the player is not moving
             h = Input.GetAxis("Horizontal");
 
             //The player is moving if h isn't 0, so we set to a static velocity
             if (h != 0)
                 rb.velocity = new Vector2(h * moveForce, rb.velocity.y);
 
-            if (Input.GetButtonDown("Jump") && currentState != jumpState)
+            if (Input.GetButtonDown("Jump") && !jump)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                jump = true;
                 anim.SetBool("Grounded", false);
             }
 
@@ -202,18 +189,12 @@ public class PlayerController : MonoBehaviour
 
             if (crouching)
                 rb.velocity = Vector2.zero;
-            else
-                rb.velocity = rb.velocity;
 
             if (currentState == attackState)
                 rb.velocity = Vector2.zero;
-            else
-                rb.velocity = rb.velocity;
 
             if (currentState == hurtState)
                 rb.velocity = Vector2.zero;
-            else
-                rb.velocity = rb.velocity;
 
             //Testing if the right sprite is being rendered
             if (attackHitSprite == sr.sprite)
@@ -240,6 +221,7 @@ public class PlayerController : MonoBehaviour
         transform.localScale = theScale;
     }
     
+    /*
     public void Damage()
     {
         audio.clip = hurtAudioClip;
@@ -247,25 +229,42 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(DamageFlash());
         anim.SetTrigger("Damage");
     }
+    */
 
+    //Player taking damage
     private void TakeDamage(float damage)
     {
-        hitPoint -= damage;
-        UpdateHealthbar();
-        //he ded
-        if (hitPoint <= 0)
+        if (vulnerable)
         {
-            hitPoint = 0;
-            Die();
+            hitPoint -= damage;
+            UpdateHealthbar();
+            //Like any game, if the thing reaches 0 hit points, it's done
+
+            if (hitPoint <= 0)
+            {
+                hitPoint = 0;
+                Die();
+            }
+            else
+            {
+                //If not though, just take damage and animation accordingly
+                anim.SetTrigger("Damage");
+                audio.clip = hurtAudioClip;
+                audio.Play();
+                StartCoroutine(DamageFlash());
+            }
         }
-        //he not ded
-        else
-        {
-            anim.SetTrigger("Damage");
-            audio.clip = hurtAudioClip;
-            audio.Play();
-            StartCoroutine(DamageFlash());
-        }
+    }
+
+    //The player is frozen in place and flashes red to indicate they took damage
+    private IEnumerator DamageFlash()
+    {
+        rb.velocity = Vector2.zero;
+        sr.color = Color.red;
+        vulnerable = false;
+        yield return new WaitForSeconds(stunLockTime);
+        vulnerable = true;
+        sr.color = Color.white;
     }
 
     public void UpdateHealthbar()
@@ -275,13 +274,6 @@ public class PlayerController : MonoBehaviour
         ratioText.text = (ratio * 100).ToString("0");
     }
 
-    private IEnumerator DamageFlash()
-    {
-        rb.velocity = Vector2.zero;
-        sr.color = Color.red;
-        yield return new WaitForSeconds(0.5f);
-        sr.color = Color.white;
-    }
 
     public void Die()
     {

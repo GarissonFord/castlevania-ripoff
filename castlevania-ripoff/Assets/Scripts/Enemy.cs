@@ -6,6 +6,8 @@ public class Enemy : MonoBehaviour {
 
     //Fields that all enemies will have access to
 
+    public SpriteRenderer sr;
+
     public float moveSpeed;
 
     //Health
@@ -14,8 +16,6 @@ public class Enemy : MonoBehaviour {
 
     //Damage the enemy deals
     public float damage;
-
-    public SpriteRenderer sr;
 
     //So we can call upon the player to take damage once we collide with them
     public PlayerController pc;

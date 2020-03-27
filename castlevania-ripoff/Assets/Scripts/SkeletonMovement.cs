@@ -5,10 +5,7 @@ using UnityEngine;
 public class SkeletonMovement : Enemy {
 
     Rigidbody2D rb;
-
-    public float moveSpeed;
-
-    public SpriteRenderer sr;
+    
     Animator anim;
 
     AnimatorStateInfo currentStateInfo;
