@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour {
     public SpriteRenderer sr;
 
     public float moveSpeed;
+    public bool facingLeft = true;
 
     //Health
     public float hitPoint;
@@ -49,5 +50,13 @@ public class Enemy : MonoBehaviour {
         /* We'll get to this later when enemies have actual health
          * 
          */
+    }
+
+    public void Flip()
+    {
+        facingLeft = !facingLeft;
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
     }
 }

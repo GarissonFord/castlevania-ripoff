@@ -18,11 +18,19 @@ public class EdgeScript : MonoBehaviour
         {
             Rigidbody2D rb = collision.gameObject.GetComponent<Rigidbody2D>();
             rb.velocity = -rb.velocity;
+            collision.gameObject.GetComponent<Enemy>().Flip();
         }
     }
 
+    /*
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Rigidbody2D rb = collision.gameObject.GetComponent<Rigidbody2D>();
+            rb.velocity = -rb.velocity;
+            collision.gameObject.GetComponent<Enemy>().Flip();           
+        }
     }
+    */
 }
