@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class EdgeScript : MonoBehaviour
 {
-    /*
     BoxCollider2D trigger;
 
 	// Use this for initialization
@@ -26,5 +25,4 @@ public class EdgeScript : MonoBehaviour
     {
         
     }
-    */
 }
